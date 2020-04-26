@@ -8,25 +8,19 @@ import { getInitials } from "utils/userInfo";
 import TextAvatar from "components/TextAvatar";
 import Avatar from "components/Avatar";
 import Header from "components/Header";
+import FeedbackSubmitButton from "components/Button/FeedbackModalButton";
 import Footnote from "components/Footnote";
 import CookieAlert from "components/CookieAlert";
 import RatingModal from "components/Feedback/RatingModal";
+import StyledInput from "components/StepWizard/StyledTextInput";
+import TextFeedbackModal from "components/Feedback/TextFeedbackModal";
+import withLabel from "components/Input/with-label";
 import Main from "./Main";
 import MobileTabs from "./MobileTabs";
 import { theme } from "constants/theme";
 
 const NOTION_URL =
   "https://www.notion.so/fightpandemics/FightPandemics-Overview-cd01dcfc05f24312ac454ac94a37eb5e";
-
-import Footnote from "~/components/Footnote";
-import Header from "~/components/Header";
-import FeedbackSubmitButton from "../../components/Button/FeedbackModalButton";
-import RatingModal from "../../components/Feedback/RatingModal";
-import TextFeedbackModal from "../../components/Feedback/TextFeedbackModal";
-import withLabel from "../../components/Input/with-label";
-import StyledInput from "../../components/StepWizard/StyledTextInput";
-import { theme } from "../../constants/theme";
-import Main from "./Main";
 
 const { royalBlue, tropicalBlue, white } = theme.colors;
 
@@ -204,6 +198,8 @@ const NavigationLayout = (props) => {
   const displayFullName = (user) =>
     user ? `${user?.firstName} ${user?.lastName}` : "";
 
+  const [ratingModal, setRatingModal] = useState(false);
+
   const toggleDrawer = () => {
     setDrawerOpened(!drawerOpened);
   };
@@ -259,13 +255,12 @@ const NavigationLayout = (props) => {
 
     return (
       <RatingModal
-        afterClose={false}
         maskClosable={true}
         closable={false}
-        visible={modal.ratingModal}
+        visible={ratingModal}
         transparent
       >
-        <h3 className="title">How well does FightPandemics meet your needs?</h3>
+        <h2 className="title">How well does FightPandemics meet your needs?</h2>
         <div className="rectangle">
           {ratingScale.map((rating, index) => (
             <div key={index} onClick={() => closeRatingModal(rating)}>
