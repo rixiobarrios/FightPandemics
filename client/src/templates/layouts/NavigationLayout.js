@@ -127,7 +127,7 @@ const Space = styled.div`
   height: ${(props) => props.height ?? "1rem"};
 `;
 
-const CloseNav = styled(Button).attrs((props) => ({
+const CloseNav = styled(Button).attrs(() => ({
   inline: true,
   icon: "cross",
   size: "lg",
@@ -187,6 +187,7 @@ const NavigationLayout = (props) => {
     { textFeedbackModal: false },
   ]);
   const [rating, setRating] = useState(null);
+  const [ratingModal, setRatingModal] = useState(false);
 
   const displayInitials = (user) => {
     if (user?.firstName && user?.lastName) {
@@ -197,8 +198,6 @@ const NavigationLayout = (props) => {
 
   const displayFullName = (user) =>
     user ? `${user?.firstName} ${user?.lastName}` : "";
-
-  const [ratingModal, setRatingModal] = useState(false);
 
   const toggleDrawer = () => {
     setDrawerOpened(!drawerOpened);
@@ -255,9 +254,10 @@ const NavigationLayout = (props) => {
 
     return (
       <RatingModal
+        afterClose={false}
         maskClosable={true}
         closable={false}
-        visible={ratingModal}
+        visible={modal.ratingModal}
         transparent
       >
         <h3 className="title">How well does FightPandemics meet your needs?</h3>
@@ -326,6 +326,13 @@ const NavigationLayout = (props) => {
       >
         Feedback
       </NavItem>
+        <NavItem
+          size={"small"}
+          margin={"8rem 0 0"}
+          onClick={() => setModal({ ratingModal: true })}
+        >
+          Feedback
+        </NavItem>
       {drawerOpened && <CloseNav onClick={toggleDrawer} />}
     </>
   );
