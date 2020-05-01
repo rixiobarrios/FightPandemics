@@ -17,6 +17,17 @@ import { theme } from "constants/theme";
 
 const NOTION_URL =
   "https://www.notion.so/fightpandemics/FightPandemics-Overview-cd01dcfc05f24312ac454ac94a37eb5e";
+
+import Footnote from "~/components/Footnote";
+import Header from "~/components/Header";
+import FeedbackSubmitButton from "../../components/Button/FeedbackModalButton";
+import RatingModal from "../../components/Feedback/RatingModal";
+import TextFeedbackModal from "../../components/Feedback/TextFeedbackModal";
+import withLabel from "../../components/Input/with-label";
+import StyledInput from "../../components/StepWizard/StyledTextInput";
+import { theme } from "../../constants/theme";
+import Main from "./Main";
+
 const { royalBlue, tropicalBlue, white } = theme.colors;
 
 const drawerStyles = {
@@ -177,7 +188,11 @@ const NavigationLayout = (props) => {
   const { mobiletabs, tabIndex, isAuthenticated, user } = props;
   const history = useHistory();
   const [drawerOpened, setDrawerOpened] = useState(false);
-  const [ratingModal, setRatingModal] = useState(false);
+  const [modal, setModal] = useState([
+    { ratingModal: false },
+    { textFeedbackModal: false },
+  ]);
+  const [rating, setRating] = useState(null);
 
   const displayInitials = (user) => {
     if (user?.firstName && user?.lastName) {
@@ -193,9 +208,50 @@ const NavigationLayout = (props) => {
     setDrawerOpened(!drawerOpened);
   };
 
-  const showRatingModal = () => {
-    toggleDrawer();
-    setRatingModal(!ratingModal);
+  const closeRatingModal = (rating) => {
+    if (drawerOpened) {
+      toggleDrawer();
+    }
+
+    setModal({ ratingModal: false });
+
+    if (modal.ratingModal) {
+      setRating(rating);
+      setModal({ textFeedbackModal: true });
+    }
+  };
+
+  const closeTextFeedbackModal = () => {
+    setModal({ ratitextFeedbackModalngModal: false });
+  };
+
+  const renderTextFeedbackModal = () => {
+    const inputLabelsText = [
+      "Which features are the most valuable to you?",
+      "If you could change one thing about FightPandemics, what would it be?",
+      "Any other feedback for us?",
+    ];
+
+    const InputWithLabel = withLabel(() => <StyledInput></StyledInput>);
+
+    return (
+      <TextFeedbackModal
+        afterClose={() => closeTextFeedbackModal}
+        maskClosable={true}
+        closable={true}
+        visible={modal.textFeedbackModal}
+        onClose={() => closeTextFeedbackModal()}
+        transparent
+      >
+        <h2 className="title">
+          Thank you for being an early user of FightPandemics!
+        </h2>
+        {inputLabelsText.map((labelText, index) => (
+          <InputWithLabel key={index} label={labelText}></InputWithLabel>
+        ))}
+        <FeedbackSubmitButton title="Next"></FeedbackSubmitButton>
+      </TextFeedbackModal>
+    );
   };
 
   const renderRatingModal = () => {
@@ -203,16 +259,16 @@ const NavigationLayout = (props) => {
 
     return (
       <RatingModal
-        afterClose={showTextFeedbackModal}
+        afterClose={false}
         maskClosable={true}
         closable={false}
-        visible={ratingModal}
+        visible={modal.ratingModal}
         transparent
       >
         <h3 className="title">How well does FightPandemics meet your needs?</h3>
         <div className="rectangle">
           {ratingScale.map((rating, index) => (
-            <div key={index} onClick={showRatingModal}>
+            <div key={index} onClick={() => closeRatingModal(rating)}>
               {rating}
             </div>
           ))}
@@ -268,10 +324,11 @@ const NavigationLayout = (props) => {
       <NavItem history={history}>
         <Link to="/about-us">About Us</Link>
       </NavItem>
-      <NavItem history={history} link="/privacy">
-        Data Privacy
-      </NavItem>
-      <NavItem size={"small"} margin={"8rem 0 0"} onClick={showRatingModal}>
+      <NavItem
+        size={"small"}
+        margin={"8rem 0 0"}
+        onClick={() => setModal({ ratingModal: true })}
+      >
         Feedback
       </NavItem>
       {drawerOpened && <CloseNav onClick={toggleDrawer} />}
@@ -312,6 +369,8 @@ const NavigationLayout = (props) => {
           ) : null}
           <Main>
             <props.component {...props} />
+            {renderRatingModal()}
+            {renderTextFeedbackModal()}
           </Main>
           <Footnote />
           <CookieAlert />
