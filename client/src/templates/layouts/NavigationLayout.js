@@ -24,7 +24,6 @@ import { feedbackReducer } from "hooks/reducers/feedbackReducer";
 const NOTION_URL =
   "https://www.notion.so/fightpandemics/FightPandemics-Overview-cd01dcfc05f24312ac454ac94a37eb5e";
 
-
 const initialState = {
   ratingModal: false,
   textFeedbackModal: false,
