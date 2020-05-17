@@ -11,6 +11,7 @@ import Header from "components/Header";
 import FeedbackSubmitButton from "components/Button/FeedbackModalButton";
 import Footnote from "components/Footnote";
 import CookieAlert from "components/CookieAlert";
+import RadioGroup from "components/Feedback/RadioGroup";
 import RatingModal from "components/Feedback/RatingModal";
 import StyledInput from "components/StepWizard/StyledTextInput";
 import TextFeedbackModal from "components/Feedback/TextFeedbackModal";
@@ -217,10 +218,12 @@ const NavigationLayout = (props) => {
   const {
     ratingModal,
     textFeedbackModal,
+    radioModal,
     rating,
     mostValuableFeature,
     whatWouldChange,
     generalFeedback,
+    age,
     covidImpact,
   } = feedbackState;
 
@@ -246,6 +249,75 @@ const NavigationLayout = (props) => {
 
   const closeTextFeedbackModal = () => {
     toggleModal("textFeedbackModal");
+    toggleModal("radioModal");
+  };
+
+  const renderRadioModal = () => {
+    const inputLabelsText = [
+      {
+        stateKey: "age",
+        label: "What is your age?",
+      },
+    ];
+
+    const radioButtonOptions = [
+      {
+        stateKey: "covidImpact",
+        value: "I go to work/school normally",
+      },
+      {
+        stateKey: "covidImpact",
+        value: "I am healthy but in a stay-at-home quarantine",
+      },
+      {
+        stateKey: "covidImpact",
+        value: "I have mild symptoms but haven't been tested",
+      },
+      {
+        stateKey: "covidImpact",
+        value: "I am diagnosed with Covid-19",
+      },
+    ];
+    const InputWithLabel = withLabel(() => <StyledInput></StyledInput>);
+    const RadioGroupWithLabel = withLabel(() => (
+      <RadioGroup
+        onChange={true}
+        options={radioButtonOptions}
+        value={true}
+        padding="1rem 1rem"
+      ></RadioGroup>
+    ));
+
+    return (
+      <RadioModal
+        afterClose={() => closeTextFeedbackModal}
+        maskClosable={true}
+        closable={true}
+        visible={radioModal}
+        onClose={() => closeTextFeedbackModal()}
+        transparent
+      >
+        <h2 className="title">We are almost done!</h2>
+        {inputLabelsText.map((label, index) => (
+          <>
+            <InputWithLabel
+              onChange={(e) =>
+                dispatchAction(SET_VALUE, label.stateKey, e.target.value)
+              }
+              key={index}
+              label={label.label}
+              value={label.stateKey}
+            ></InputWithLabel>
+            <RadioGroupWithLabel label={"How has COVID-19 impacted you?"} />
+          </>
+        ))}
+        <FeedbackSubmitButton
+          title="Submit Feedback"
+          onClick={closeTextFeedbackModal}
+          dark
+        ></FeedbackSubmitButton>
+      </RadioModal>
+    );
   };
 
   const renderTextFeedbackModal = () => {
@@ -417,6 +489,7 @@ const NavigationLayout = (props) => {
             <props.component {...props} />
             {renderRatingModal()}
             {renderTextFeedbackModal()}
+            {renderRadioModal()}
           </Main>
           <Footnote />
           <CookieAlert />
