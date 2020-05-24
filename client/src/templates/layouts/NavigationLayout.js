@@ -12,6 +12,7 @@ import FeedbackSubmitButton from "components/Button/FeedbackModalButton";
 import Footnote from "components/Footnote";
 import CookieAlert from "components/CookieAlert";
 import RadioGroup from "components/Feedback/RadioGroup";
+import RadioModal from "components/Feedback/RadioModal";
 import RatingModal from "components/Feedback/RatingModal";
 import StyledInput from "components/StepWizard/StyledTextInput";
 import TextFeedbackModal from "components/Feedback/TextFeedbackModal";
