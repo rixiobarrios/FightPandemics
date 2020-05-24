@@ -2,15 +2,16 @@ import React from "react";
 import { NavBar } from "antd-mobile";
 import { Link, NavLink } from "react-router-dom";
 import styled from "styled-components";
-import TextAvatar from "components/TextAvatar";
 
 // ICONS
 import SvgIcon from "./Icon/SvgIcon";
+import { ReactComponent as FeedbackIcon } from "assets/icons/mail.svg";
 import envelope from "assets/icons/envelope.svg";
 import menu from "assets/icons/menu.svg";
 import logo from "assets/logo.svg";
 import Logo from "./Logo";
-import { theme, mq } from "../constants/theme";
+import TextAvatar from "components/TextAvatar";
+import { theme, mq } from "constants/theme";
 
 const { colors, typography } = theme;
 const { large } = typography.size;
@@ -49,6 +50,12 @@ const DesktopMenu = styled.div`
 const NavLinks = styled.div`
   align-self: flex-end;
   padding-top: 2rem;
+  button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
   ul {
     list-style-type: none;
     display: flex;
@@ -71,6 +78,7 @@ const NavLinks = styled.div`
     li {
       font-size: ${large};
       color: ${colors.darkerGray};
+      padding: 0 1rem;
       a:not(.registerLink) {
         color: ${colors.darkerGray};
         text-decoration: none;
@@ -92,7 +100,8 @@ const activeStyles = {
   color: `${colors.royalBlue}`,
 };
 
-export default ({ onMenuClick, isAuthenticated }) => {
+export default ({ isAuthenticated, onMenuClick, onFeedbackIconClick, }) => {
+
   return (
     <div className="header">
       <StyledNavBar
@@ -155,6 +164,11 @@ export default ({ onMenuClick, isAuthenticated }) => {
                       </Link>
                     </>
                   )}
+                  <li>
+                    <button onClick={() => onFeedbackIconClick()}>
+                      <FeedbackIcon />
+                    </button>
+                  </li>
                 </ul>
               </NavLinks>
             </DesktopMenu>
