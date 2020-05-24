@@ -16,12 +16,15 @@ import RadioModal from "components/Feedback/RadioModal";
 import RatingModal from "components/Feedback/RatingModal";
 import StyledInput from "components/StepWizard/StyledTextInput";
 import TextFeedbackModal from "components/Feedback/TextFeedbackModal";
+import ThanksModal from "components/Feedback/ThanksModal";
 import withLabel from "components/Input/with-label";
 import Main from "./Main";
 import MobileTabs from "./MobileTabs";
 import { theme } from "constants/theme";
 import { TOGGLE_STATE, SET_VALUE } from "hooks/actions/feedbackActions";
 import { feedbackReducer } from "hooks/reducers/feedbackReducer";
+import Logo from "components/Logo";
+import logo from "assets/logo.svg";
 
 const NOTION_URL =
   "https://www.notion.so/fightpandemics/FightPandemics-Overview-cd01dcfc05f24312ac454ac94a37eb5e";
@@ -196,10 +199,6 @@ const NavigationLayout = (props) => {
   const { mobiletabs, tabIndex, isAuthenticated, user } = props;
   const history = useHistory();
   const [drawerOpened, setDrawerOpened] = useState(false);
-  const [modal, setModal] = useState([
-    { ratingModal: false },
-    { textFeedbackModal: false },
-  ]);
 
   const displayInitials = (user) => {
     if (user?.firstName && user?.lastName) {
@@ -220,6 +219,7 @@ const NavigationLayout = (props) => {
     ratingModal,
     textFeedbackModal,
     radioModal,
+    thanksModal,
     rating,
     mostValuableFeature,
     whatWouldChange,
@@ -228,8 +228,9 @@ const NavigationLayout = (props) => {
     covidImpact,
   } = feedbackState;
 
-  const dispatchAction = (type, key, value) =>
+  const dispatchAction = (type, key, value) => {
     feedbackDispatch({ type, key, value });
+  };
 
   const toggleDrawer = () => {
     setDrawerOpened(!drawerOpened);
@@ -251,6 +252,28 @@ const NavigationLayout = (props) => {
   const closeTextFeedbackModal = () => {
     toggleModal("textFeedbackModal");
     toggleModal("radioModal");
+  };
+
+  const closeRadioModal = () => {
+    toggleModal("radioModal");
+    toggleModal("thanksModal");
+  };
+
+  const renderThanksModal = () => {
+    return (
+      <ThanksModal
+        onClose={() => dispatchAction(TOGGLE_STATE, "thanksModal")}
+        visible={thanksModal}
+        transparent
+      >
+        <h2 className="title">Thank you!</h2>
+        <p>
+          Your input means a lot and helps us help you and others during and
+          after the COVID-19 pandemic.
+        </p>
+        <Logo src={logo} alt="Fight Pandemics logo" />
+      </ThanksModal>
+    );
   };
 
   const renderRadioModal = () => {
@@ -279,7 +302,7 @@ const NavigationLayout = (props) => {
         value: "I am diagnosed with Covid-19",
       },
     ];
-    const InputWithLabel = withLabel(() => <StyledInput></StyledInput>);
+
     const RadioGroupWithLabel = withLabel(() => (
       <RadioGroup
         onChange={true}
@@ -291,30 +314,27 @@ const NavigationLayout = (props) => {
 
     return (
       <RadioModal
-        afterClose={() => closeTextFeedbackModal}
         maskClosable={true}
         closable={true}
         visible={radioModal}
-        onClose={() => closeTextFeedbackModal()}
+        onClose={() => closeRadioModal()}
         transparent
       >
         <h2 className="title">We are almost done!</h2>
         {inputLabelsText.map((label, index) => (
           <>
-            <InputWithLabel
-              onChange={(e) =>
-                dispatchAction(SET_VALUE, label.stateKey, e.target.value)
-              }
+            <StyledInput
               key={index}
               label={label.label}
               value={label.stateKey}
-            ></InputWithLabel>
+              onChange={dispatchAction}
+            ></StyledInput>
             <RadioGroupWithLabel label={"How has COVID-19 impacted you?"} />
           </>
         ))}
         <FeedbackSubmitButton
           title="Submit Feedback"
-          onClick={closeTextFeedbackModal}
+          onClick={closeRadioModal}
           dark
         ></FeedbackSubmitButton>
       </RadioModal>
@@ -335,8 +355,6 @@ const NavigationLayout = (props) => {
       { stateKey: "generalFeedback", label: "Any other feedback for us?" },
     ];
 
-    const InputWithLabel = withLabel(() => <StyledInput></StyledInput>);
-
     return (
       <TextFeedbackModal
         afterClose={() => closeTextFeedbackModal}
@@ -350,14 +368,12 @@ const NavigationLayout = (props) => {
           Thank you for being an early user of FightPandemics!
         </h2>
         {inputLabelsText.map((label, index) => (
-          <InputWithLabel
-            onChange={(e) =>
-              dispatchAction(SET_VALUE, label.stateKey, e.target.value)
-            }
+          <StyledInput
             key={index}
             label={label.label}
             value={label.stateKey}
-          ></InputWithLabel>
+            onChange={dispatchAction}
+          ></StyledInput>
         ))}
         <FeedbackSubmitButton
           title="Next"
@@ -482,6 +498,9 @@ const NavigationLayout = (props) => {
           <Header
             onMenuClick={toggleDrawer}
             isAuthenticated={isAuthenticated}
+            onFeedbackIconClick={() =>
+              dispatchAction(TOGGLE_STATE, "ratingModal")
+            }
           />
           {mobiletabs ? (
             <MobileTabs tabIndex={tabIndex} childComponent={props.children} />
@@ -491,6 +510,7 @@ const NavigationLayout = (props) => {
             {renderRatingModal()}
             {renderTextFeedbackModal()}
             {renderRadioModal()}
+            {renderThanksModal()}
           </Main>
           <Footnote />
           <CookieAlert />
