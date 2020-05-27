@@ -1,43 +1,43 @@
 import { Drawer, List, Button, Flex, WhiteSpace } from "antd-mobile";
-import { Typography } from "antd";
+import { Alert, Typography } from "antd";
+import axios from "axios";
 import React, { useState, useReducer } from "react";
 import { Link, useHistory } from "react-router-dom";
 import styled from "styled-components";
 
-import { getInitials } from "utils/userInfo";
-import TextAvatar from "components/TextAvatar";
-import Avatar from "components/Avatar";
-import Header from "components/Header";
+import CookieAlert from "components/CookieAlert";
 import FeedbackSubmitButton from "components/Button/FeedbackModalButton";
 import Footnote from "components/Footnote";
-import CookieAlert from "components/CookieAlert";
+import { getInitials } from "utils/userInfo";
+import Header from "components/Header";
+import Main from "./Main";
+import MobileTabs from "./MobileTabs";
 import RadioGroup from "components/Feedback/RadioGroup";
 import RadioModal from "components/Feedback/RadioModal";
 import RatingModal from "components/Feedback/RatingModal";
 import StyledInput from "components/StepWizard/StyledTextInput";
+import TextAvatar from "components/TextAvatar";
 import TextFeedbackModal from "components/Feedback/TextFeedbackModal";
 import ThanksModal from "components/Feedback/ThanksModal";
 import withLabel from "components/Input/with-label";
-import Main from "./Main";
-import MobileTabs from "./MobileTabs";
+import { ORANGE_RED, WHITE, ROYAL_BLUE, TROPICAL_BLUE } from "constants/colors";
 import { theme } from "constants/theme";
-import { TOGGLE_STATE, SET_VALUE } from "hooks/actions/feedbackActions";
-import { feedbackReducer } from "hooks/reducers/feedbackReducer";
+import {
+  TOGGLE_STATE,
+  SET_VALUE,
+  FEEDBACK_FORM_SUBMIT,
+  FEEDBACK_FORM_SUBMIT_ERROR,
+} from "hooks/actions/feedbackActions";
+import {
+  feedbackReducer,
+  feedbackFormReducer,
+  initialState,
+} from "hooks/reducers/feedbackReducers";
 import Logo from "components/Logo";
 import logo from "assets/logo.svg";
 
 const NOTION_URL =
   "https://www.notion.so/fightpandemics/FightPandemics-Overview-cd01dcfc05f24312ac454ac94a37eb5e";
-
-const initialState = {
-  ratingModal: false,
-  textFeedbackModal: false,
-  rating: "",
-  mostValuableFeature: "",
-  whatWouldChange: "",
-  generalFeedback: "",
-  covidImpact: "",
-};
 
 const { royalBlue, tropicalBlue, white } = theme.colors;
 
@@ -48,7 +48,7 @@ const drawerStyles = {
 };
 
 const sidebarStyle = {
-  background: `${royalBlue}`,
+  background: `${ROYAL_BLUE}`,
 };
 
 const MenuContainer = styled.div`
@@ -96,7 +96,7 @@ const NavItem = styled(List.Item)`
       height: 0 !important;
     }
     & .am-list-content {
-      color: ${white};
+      color: ${WHITE};
       cursor: pointer;
       font-family: "Poppins", sans-serif;
       font-size: ${(props) => (props.size === "small" ? "2rem" : "2.4rem")};
@@ -109,7 +109,7 @@ const NavItem = styled(List.Item)`
   }
 
   &.am-list-item-active {
-    background: ${tropicalBlue};
+    background: ${TROPICAL_BLUE};
   }
 `;
 
@@ -152,7 +152,7 @@ const CloseNav = styled(Button).attrs(() => ({
   background: unset;
   border-width: 0 !important;
   border-radius: 0;
-  color: ${white};
+  color: ${WHITE};
   cursor: pointer;
   font-size: 2rem;
   position: absolute;
@@ -162,7 +162,7 @@ const CloseNav = styled(Button).attrs(() => ({
 
   &.am-button-active {
     background: none;
-    color: ${white};
+    color: ${WHITE};
   }
   &::before {
     display: none;
@@ -170,7 +170,14 @@ const CloseNav = styled(Button).attrs(() => ({
 
   .am-icon {
     stroke-width: 2px;
-    stroke: ${white};
+    stroke: ${WHITE};
+  }
+`;
+
+const ErrorAlert = styled(Alert)`
+  background-color: ${ORANGE_RED};
+  .ant-alert-message {
+    color: ${WHITE};
   }
 `;
 
@@ -212,7 +219,12 @@ const NavigationLayout = (props) => {
 
   const [feedbackState, feedbackDispatch] = useReducer(
     feedbackReducer,
-    initialState,
+    initialState.feedbackReducer,
+  );
+
+  const [feedbackFormState, feedbackFormDispatch] = useReducer(
+    feedbackFormReducer,
+    initialState.feedbackFormReducer,
   );
 
   const {
@@ -255,8 +267,32 @@ const NavigationLayout = (props) => {
   };
 
   const closeRadioModal = () => {
+    submitFeedbackForm();
     toggleModal("radioModal");
-    toggleModal("thanksModal");
+    if (feedbackFormState.error === "") {
+      toggleModal("thanksModal");
+    }
+  };
+
+  const submitFeedbackForm = async () => {
+    feedbackFormDispatch({ type: FEEDBACK_FORM_SUBMIT });
+    try {
+      await axios.post("/api/feedback", {
+        rating: rating,
+        age: age,
+        userId: 5,
+        covidImpact: covidImpact,
+        generalFeedback: generalFeedback,
+        mostValuableFeature: mostValuableFeature,
+        whatWouldChange: whatWouldChange,
+      });
+    } catch (err) {
+      const message = err.response?.data?.message || err.message;
+      feedbackFormDispatch({
+        type: FEEDBACK_FORM_SUBMIT_ERROR,
+        error: `Could not submit feedback, reason: ${message}`,
+      });
+    }
   };
 
   const renderThanksModal = () => {
@@ -455,17 +491,10 @@ const NavigationLayout = (props) => {
       <NavItem
         size={"small"}
         margin={"8rem 0 0"}
-        onClick={() => setModal({ ratingModal: true })}
+        onClick={() => dispatchAction(TOGGLE_STATE, "ratingModal")}
       >
         Feedback
       </NavItem>
-        <NavItem
-          size={"small"}
-          margin={"8rem 0 0"}
-          onClick={() => dispatchAction(TOGGLE_STATE, "ratingModal")}
-        >
-          Feedback
-        </NavItem>
       {drawerOpened && <CloseNav onClick={toggleDrawer} />}
     </>
   );
@@ -511,6 +540,13 @@ const NavigationLayout = (props) => {
             {renderTextFeedbackModal()}
             {renderRadioModal()}
             {renderThanksModal()}
+            {feedbackFormState.error && (
+              <ErrorAlert
+                message={feedbackFormState.error}
+                type="error"
+                closable={true}
+              />
+            )}
           </Main>
           <Footnote />
           <CookieAlert />
