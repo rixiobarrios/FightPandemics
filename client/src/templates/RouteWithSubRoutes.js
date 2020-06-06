@@ -60,6 +60,7 @@ export const RouteWithSubRoutes = (route) => {
             }}
           />
         ) : (
+
           <Layout
             {...rest}
             {...route.props}
