@@ -104,7 +104,7 @@ const NavItem = styled(List.Item)`
       line-height: 6rem;
       padding: 0;
       margin: ${(props) =>
-        typeof props.margin != undefined ? props.margin : "inherit"};
+    typeof props.margin != undefined ? props.margin : "inherit"};
     }
   }
 
@@ -268,10 +268,8 @@ const NavigationLayout = (props) => {
 
   const closeRadioModal = () => {
     submitFeedbackForm();
+    toggleModal("thanksModal");
     toggleModal("radioModal");
-    if (feedbackFormState.error === "") {
-      toggleModal("thanksModal");
-    }
   };
 
   const submitFeedbackForm = async () => {
@@ -371,7 +369,7 @@ const NavigationLayout = (props) => {
         <FeedbackSubmitButton
           title="Submit Feedback"
           onClick={closeRadioModal}
-          dark
+
         ></FeedbackSubmitButton>
       </RadioModal>
     );
@@ -470,7 +468,7 @@ const NavigationLayout = (props) => {
       <NavItem history={history}>
         <Link to="/feed">Feed</Link>
       </NavItem>
-      <NavItem history={history}> 
+      <NavItem history={history}>
         <Link to="/about-us">About Us</Link>
       </NavItem>
       <Space height="12rem" />

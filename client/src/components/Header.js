@@ -10,6 +10,7 @@ import envelope from "assets/icons/envelope.svg";
 import menu from "assets/icons/menu.svg";
 import logo from "assets/logo.svg";
 import Logo from "./Logo";
+
 import TextAvatar from "components/TextAvatar";
 import { theme, mq } from "constants/theme";
 
@@ -149,24 +150,21 @@ export default ({ isAuthenticated, onMenuClick, onFeedbackIconClick, }) => {
                       <li>
                         <NavLink activeStyle={activeStyles} to="/auth/login">
                           Login
-                        </NavLink>
+                      </NavLink>
                       </li>
                       <li className="registerBtn">
                         <NavLink className="registerLink" to="/auth/signup">
-                          Register
+                            Register
                         </NavLink>
                       </li>
-                      <Link to="/feed">
-                        <SvgIcon
-                          src={envelope}
-                          style={{ marginLeft: "1.5rem" }}
-                        />
-                      </Link>
                     </>
                   )}
                   <li>
                     <button onClick={() => onFeedbackIconClick()}>
-                      <FeedbackIcon />
+                      <SvgIcon
+                        src={envelope}
+                        style={{ marginLeft: "1rem" }}
+                      />
                     </button>
                   </li>
                 </ul>
