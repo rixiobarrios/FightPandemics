@@ -102,7 +102,6 @@ const activeStyles = {
 };
 
 export default ({ isAuthenticated, onMenuClick, onFeedbackIconClick, }) => {
-
   return (
     <div className="header">
       <StyledNavBar
@@ -161,10 +160,7 @@ export default ({ isAuthenticated, onMenuClick, onFeedbackIconClick, }) => {
                   )}
                   <li>
                     <button onClick={() => onFeedbackIconClick()}>
-                      <SvgIcon
-                        src={envelope}
-                        style={{ marginLeft: "1rem" }}
-                      />
+                      <FeedbackIcon />
                     </button>
                   </li>
                 </ul>
