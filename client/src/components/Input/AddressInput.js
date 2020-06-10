@@ -112,11 +112,11 @@ const AddressInput = ({ location, errors, onLocationChange }) => {
           onChange={(e) => setInputAddress(e.target.value)}
           disabled={loadingPlaceDetails}
           value={inputAddress}
-          className={errors.location && "has-errors"}
+          className={errors?.location && "has-errors"}
           style={inputStyles}
         />
-        {errors.location && (
-          <InputError>{errors.location.message}</InputError>
+        {errors?.location && (
+          <InputError>{errors?.location.message}</InputError>
         )}
         {apiError && (
           <ErrorAlert message={apiError}/>
