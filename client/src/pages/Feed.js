@@ -63,7 +63,7 @@ const initialState = {
   filterModal: false,
   createPostModal: false,
   activePanel: null,
-  location: "",
+  location: {},
 };
 
 const SiderWrapper = styled(Sider)`
@@ -223,13 +223,14 @@ const Feed = (props) => {
       dispatchAction(TOGGLE_STATE, "showFilters");
     }
 
-    dispatchAction(SET_VALUE, "location", "");
+    dispatchAction(SET_VALUE, "location", {});
     dispatchAction(SET_VALUE, "activePanel", null);
     optionsDispatch({ type: REMOVE_ALL_OPTIONS, payload: {} });
   };
 
-  const handleLocation = (value) =>
+  const handleLocation = (value) => {
     dispatchAction(SET_VALUE, "location", value);
+  }
 
   const handleOption = (label, option) => (e) => {
     const options = selectedOptions[label] || [];
@@ -317,14 +318,28 @@ const Feed = (props) => {
     });
   };
 
+  const parseLocationParams = (location) => {
+    let queryStringPartial = "";
+    if (location.coordinates) {
+      queryStringPartial += `coordinates=${location.coordinates.join(",")}`;
+    }
+    if (location.country) {
+      queryStringPartial += `country=${location.country}`;
+    }
+    if (location.state) {
+      queryStringPartial += `state=${location.state}`;
+    }
+    if (location.city) {
+      queryStringPartial += `city=${location.city}`;
+    }
+    return queryStringPartial;
+  }
+
   const loadPosts = useCallback(async () => {
-    const { user } = props;
     const limit = 5;
     const skip = page * limit;
-    /* Add userId when user is logged */
-    const endpoint = `/api/posts?limit=${limit}&skip=${skip}${
-      user && user.userId ? `&userId=${user.userId}` : ""
-    }`;
+    let endpoint = `/api/posts?limit=${limit}&skip=${skip}`;
+    endpoint += parseLocationParams(location);
     let response = {};
 
     if (isLoading) {

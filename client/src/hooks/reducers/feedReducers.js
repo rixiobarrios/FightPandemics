@@ -8,6 +8,7 @@ import {
   FETCH_POSTS,
   ERROR_POSTS,
   NEXT_PAGE,
+  RESET_PAGES,
   SET_LOADING,
   SET_LIKE,
   SET_COMMENTS,
@@ -34,6 +35,7 @@ export const feedReducer = (oldState, action) => {
 };
 
 export const optionsReducer = (oldState, action) => {
+  console.log(oldState)
   const { option, label } = action.payload;
   const newState = Object.assign({}, oldState);
   switch (action.type) {
