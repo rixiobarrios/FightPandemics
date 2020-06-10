@@ -101,7 +101,7 @@ const activeStyles = {
   color: `${colors.royalBlue}`,
 };
 
-export default ({ isAuthenticated, onMenuClick, onFeedbackIconClick, }) => {
+export default ({ isAuthenticated, onFeedbackIconClick, onMenuClick }) => {
   return (
     <div className="header">
       <StyledNavBar
@@ -159,7 +159,7 @@ export default ({ isAuthenticated, onMenuClick, onFeedbackIconClick, }) => {
                     </>
                   )}
                   <li>
-                    <button onClick={() => onFeedbackIconClick()}>
+                    <button onClick={onFeedbackIconClick}>
                       <FeedbackIcon />
                     </button>
                   </li>
