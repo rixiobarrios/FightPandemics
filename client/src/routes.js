@@ -77,7 +77,7 @@ const routes = [
     component: CreateOrganizationProfile,
   },
   {
-    path: "/organization/:id",
+    path: "/organization",
     component: OrganizationProfile,
   },
   {
