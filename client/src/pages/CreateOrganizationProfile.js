@@ -11,7 +11,6 @@ import Select from "components/Input/Select";
 import SubmitButton from "components/Button/SubmitButton";
 import Label from "components/Input/Label";
 import StyledCheckbox from "components/Input/Checkbox";
-import StyledCheckboxGroup from "components/Input/CheckboxGroup";
 import Checkbox from "components/Input/Checkbox";
 import AddressInput from "components/Input/AddressInput";
 import createOrganizationSvg from "assets/icons/create-organization.svg";
@@ -69,9 +68,6 @@ const CheckboxGroup = ({
 
 
 const { type, industry } = createOrganizationProfile;
-
-
-const organizationNeeds = ['Volunteer', 'Staff', 'Donations', 'Investors', 'Others'];
 
 
 const CreateOrgProfile = (props) => {
